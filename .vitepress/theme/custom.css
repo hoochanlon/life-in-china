@@ -136,6 +136,40 @@ html[data-home-page] .tk-right-bottom-button .back-top {
   border: 0;
 }
 
+/* 顶栏右侧图标之间的竖分隔线（VitePress + Teek theme-enhance） */
+.VPNavBar .menu + .translations::before,
+.VPNavBar .menu + .appearance::before,
+.VPNavBar .menu + .social-links::before,
+.VPNavBar .translations + .appearance::before,
+.VPNavBar .appearance + .social-links::before,
+.tk-theme-enhance::before {
+  display: none !important;
+}
+
+/* 去掉分隔线后保留图标间距，避免导航项贴在一起 */
+.VPNavBar .content-body {
+  column-gap: 16px;
+}
+
+/* 桌面顶栏顺序：首页、GitHub、夜间模式、布局配置 */
+@media (min-width: 1280px) {
+  .VPNavBar .content-body > .menu {
+    order: 1;
+  }
+
+  .VPNavBar .content-body > .social-links {
+    order: 2;
+  }
+
+  .VPNavBar .content-body > .appearance {
+    order: 3;
+  }
+
+  .VPNavBar .content-body > .tk-theme-enhance {
+    order: 4;
+  }
+}
+
 /* 移动端：去掉搜索旁汉堡（及全屏抽屉入口），侧栏仍走下方 Menu */
 @media (max-width: 767px) {
   .VPNavBarHamburger {

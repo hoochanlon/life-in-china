@@ -91,13 +91,6 @@ export default withMermaid(
       darkModeSwitchLabel: '外观',
       lightModeSwitchTitle: '切换为浅色',
       darkModeSwitchTitle: '切换为深色',
-      nav: [
-        {
-          // 顶栏只显示图标；移动端抽屉里再露出「首页」文字（见 custom.css）
-          text: '<span class="nav-home-icon" aria-hidden="true"></span><span class="nav-home-label">首页</span>',
-          link: '/',
-        },
-      ],
 
       socialLinks: [
         {
