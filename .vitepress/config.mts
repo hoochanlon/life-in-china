@@ -33,6 +33,8 @@ const teekConfig = defineTeekConfig({
     },
     themeColor: {
       disableHelp: true,
+      // 移动端不显示右下角配色板（桌面仍走顶栏 themeEnhance）
+      disabledInMobile: true,
     },
     spotlight: {
       disableHelp: true,
@@ -85,15 +87,24 @@ export default withMermaid(
 
     themeConfig: {
       logo: '/icons/feather.svg',
+      // 移动端汉堡菜单里的外观开关文案（默认英文 Appearance）
+      darkModeSwitchLabel: '外观',
+      lightModeSwitchTitle: '切换为浅色',
+      darkModeSwitchTitle: '切换为深色',
       nav: [
         {
-          text: '<span class="nav-home-icon" aria-hidden="true"></span><span class="visually-hidden">首页</span>',
+          // 顶栏只显示图标；移动端抽屉里再露出「首页」文字（见 custom.css）
+          text: '<span class="nav-home-icon" aria-hidden="true"></span><span class="nav-home-label">首页</span>',
           link: '/',
         },
       ],
 
       socialLinks: [
-        { icon: 'github', link: 'https://github.com/hoochanlon/life-in-china' }
+        {
+          icon: 'github',
+          link: 'https://github.com/hoochanlon/life-in-china',
+          ariaLabel: 'GitHub 仓库',
+        },
       ],
 
       // 每次 config 加载时重扫文档树（结构变更由 sidebar-hot-reload 触发 restart）
