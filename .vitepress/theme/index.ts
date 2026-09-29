@@ -6,6 +6,8 @@ import { setupHomePageFlag } from './home-page-flag'
 import { setupReadmeAlias } from './readme-alias'
 import { setupStripNativeTitles } from './strip-native-titles'
 import 'vitepress-theme-teek/index.css'
+// 原版「刷新/切页淡入」：不在 index.css 内，需单独引入（与 loading 遮罩无关）
+import 'vitepress-theme-teek/theme-chalk/tk-fade-up-animation.css'
 import './custom.css'
 
 export default {
