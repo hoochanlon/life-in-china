@@ -80,6 +80,7 @@ html[data-home-page] .tk-right-bottom-button .back-top {
   }
 }
 
+/* 仅用于右侧目录截断标题的完整文案 */
 .wiki-tip {
   position: fixed;
   top: 0;

@@ -1,46 +1,32 @@
 import type { Router } from 'vitepress'
 
-const TITLE_SELECTOR = '[title]'
-const TIP_SELECTOR = '[data-tip]'
-const OUTLINE_SELECTOR = '.tk-aside-outline-item, .VPDocOutlineItem, .VPDocAsideOutline'
-const SKIP_SELECTOR = [
-  '.VPSwitchAppearance',
-  '.color-list',
-  '.tk-theme-enhance h3',
-].join(', ')
+const TITLE_SELECTOR = '[title], [data-tip]'
+const OUTLINE_SELECTOR = '.VPDocAside, .VPDocOutlineItem, .outline-link, .tk-aside-outline-item'
+
+const isOutline = (el: HTMLElement) => Boolean(el.closest(OUTLINE_SELECTOR))
 
 const isTruncated = (el: HTMLElement) => el.scrollWidth - el.clientWidth > 1
 
 const visibleText = (el: HTMLElement) => el.innerText.replace(/\s+/g, ' ').trim()
 
-const shouldSkip = (el: HTMLElement) => {
-  if (el.closest(SKIP_SELECTOR)) return true
+const stripEl = (el: HTMLElement) => {
+  if (isOutline(el) && isTruncated(el)) {
+    const text =
+      el.getAttribute('title') || el.getAttribute('data-tip') || visibleText(el)
+    if (text) {
+      if (el.getAttribute('data-tip') !== text) el.setAttribute('data-tip', text)
+      if (el.hasAttribute('title')) el.removeAttribute('title')
+    }
+    return
+  }
 
-  const segmented = el.closest('.tk-segmented-item')
-  if (segmented instanceof HTMLElement && visibleText(segmented)) return true
-
-  if (el.closest(OUTLINE_SELECTOR)) return !isTruncated(el)
-
-  const text = visibleText(el)
-  const tip = el.getAttribute('data-tip') || el.getAttribute('title') || ''
-  if (text && (text === tip || tip.includes(text))) return true
-
-  return false
+  if (el.hasAttribute('title')) el.removeAttribute('title')
+  if (el.hasAttribute('data-tip')) el.removeAttribute('data-tip')
 }
 
-const upgradeNativeTitles = (root: ParentNode = document) => {
-  root.querySelectorAll<HTMLElement>(TITLE_SELECTOR).forEach((el) => {
-    if (el.closest('.wiki-tip')) return
-    const title = el.getAttribute('title')?.trim()
-    if (!title) return
-    if (shouldSkip(el)) {
-      el.removeAttribute('title')
-      el.removeAttribute('data-tip')
-      return
-    }
-    el.setAttribute('data-tip', title)
-    el.removeAttribute('title')
-  })
+const stripTitles = (root: ParentNode = document) => {
+  if (root instanceof HTMLElement) stripEl(root)
+  root.querySelectorAll<HTMLElement>(TITLE_SELECTOR).forEach(stripEl)
 }
 
 const createTipEl = () => {
@@ -75,19 +61,20 @@ const placeTip = (tip: HTMLElement, anchor: HTMLElement) => {
   tip.style.left = `${Math.round(left)}px`
 }
 
-export const setupArticleMetaTooltip = (router: Router) => {
+export const setupStripNativeTitles = (router: Router) => {
   if (typeof window === 'undefined') return
 
   const tip = createTipEl()
   let active: HTMLElement | null = null
+  let stripping = false
 
   const hide = () => {
     active = null
     tip.classList.remove('is-show')
   }
 
-  const show = (anchor: HTMLElement) => {
-    if (shouldSkip(anchor) || !anchor.getAttribute('data-tip')) {
+  const showOutlineTip = (anchor: HTMLElement) => {
+    if (!isOutline(anchor) || !isTruncated(anchor) || !anchor.getAttribute('data-tip')) {
       hide()
       return
     }
@@ -95,7 +82,14 @@ export const setupArticleMetaTooltip = (router: Router) => {
     placeTip(tip, anchor)
   }
 
-  const run = () => requestAnimationFrame(() => upgradeNativeTitles())
+  const run = () => {
+    if (stripping) return
+    requestAnimationFrame(() => {
+      stripping = true
+      stripTitles()
+      stripping = false
+    })
+  }
 
   document.addEventListener(
     'mouseover',
@@ -104,13 +98,22 @@ export const setupArticleMetaTooltip = (router: Router) => {
       if (!(target instanceof Element)) return
       if (target.closest('.wiki-tip')) return
 
-      const titled = target.closest(`${TITLE_SELECTOR}, ${TIP_SELECTOR}`)
+      const titled = target.closest(`${TITLE_SELECTOR}, ${OUTLINE_SELECTOR}`)
       if (!(titled instanceof HTMLElement)) return
 
-      upgradeNativeTitles(titled)
-      show(titled)
+      if (isOutline(titled)) {
+        stripping = true
+        stripEl(titled)
+        stripping = false
+        showOutlineTip(titled)
+        return
+      }
+
+      titled.removeAttribute('title')
+      titled.removeAttribute('data-tip')
+      hide()
     },
-    true
+    true,
   )
 
   document.addEventListener(
@@ -121,14 +124,21 @@ export const setupArticleMetaTooltip = (router: Router) => {
       if (active && next instanceof Node && active.contains(next)) return
       hide()
     },
-    true
+    true,
   )
 
   document.addEventListener('scroll', hide, true)
   window.addEventListener('resize', hide)
 
-  const observer = new MutationObserver(() => run())
-  observer.observe(document.body, { childList: true, subtree: true })
+  const observer = new MutationObserver(() => {
+    if (!stripping) run()
+  })
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['title', 'data-tip'],
+  })
 
   run()
   const prev = router.onAfterRouteChange
