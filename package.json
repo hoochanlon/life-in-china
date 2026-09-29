@@ -1,7 +1,7 @@
 {
   "name": "life-in-china",
   "version": "1.0.0",
-  "description": "Observations of Life in China — 以有限个体，观测无限时代潮汐",
+  "description": "Observations of Life in China",
   "main": "index.js",
   "scripts": {
     "docs:dev": "vitepress dev",
