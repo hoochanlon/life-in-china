@@ -1,8 +1,16 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { defineTeekConfig } from 'vitepress-theme-teek/config'
 import { sidebarHotReload } from './plugins/sidebar-hot-reload'
 import { buildSidebar } from './sidebar'
+
+// Vite root = srcDir(docs/)；publicDir 相对 root，须绝对路径才能指回仓库根 public/
+const rootPublicDir = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../public',
+)
 
 const teekConfig = defineTeekConfig({
   teekHome: false,
@@ -17,6 +25,8 @@ const teekConfig = defineTeekConfig({
   },
   themeEnhance: {
     layoutSwitch: {
+      // 默认「全部展开」：侧栏 + 正文占满屏宽
+      defaultMode: 'fullWidth',
       disableHelp: true,
       disableDocMaxWidthHelp: true,
       disablePageMaxWidthHelp: true,
@@ -68,11 +78,13 @@ export default withMermaid(
     ignoreDeadLinks: true,
 
     vite: {
+      // 默认 docs/public；改指仓库根 public/，与正文 docs/ 分离
+      publicDir: rootPublicDir,
       plugins: [sidebarHotReload()],
     },
 
     themeConfig: {
-      logo: '/icons/books.svg',
+      logo: '/icons/feather.svg',
       nav: [
         {
           text: '<span class="nav-home-icon" aria-hidden="true"></span><span class="visually-hidden">首页</span>',
