@@ -1,4 +1,7 @@
-# 个体刻度 · life-in-china
+---
+prev: false
+next: false
+---
 
 # *Observations of Life in China*
 

@@ -1,0 +1,34 @@
+{
+  "name": "life-in-china",
+  "version": "1.0.0",
+  "description": "Observations of Life in China — 以有限个体，观测无限时代潮汐",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoochanlon/life-in-china.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hoochanlon/life-in-china/issues"
+  },
+  "homepage": "https://github.com/hoochanlon/life-in-china#readme",
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vitepress-sidebar": "^1.40.0",
+    "vitepress-theme-teek": "^1.6.2",
+    "vitepress-plugin-mermaid": "^2.0.0",
+    "mermaid": "^10.0.0"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.0",
+    "vue-chartjs": "^5.3.0"
+  }
+}
