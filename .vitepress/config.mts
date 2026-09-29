@@ -5,6 +5,7 @@ import { withMermaid } from 'vitepress-plugin-mermaid'
 import { defineTeekConfig } from 'vitepress-theme-teek/config'
 import { sidebarHotReload } from './plugins/sidebar-hot-reload'
 import { buildSidebar } from './sidebar'
+import { LAYOUT_MODE_BOOT_SCRIPT } from './theme/layout-mode-boot'
 
 // Vite root = srcDir(docs/)；publicDir 相对 root，须绝对路径才能指回仓库根 public/
 const rootPublicDir = path.resolve(
@@ -78,6 +79,9 @@ export default withMermaid(
     // GitHub Pages 项目站：必须与仓库名一致，本地也要打开带 base 的路径
     base: '/life-in-china/',
     ignoreDeadLinks: true,
+
+    // 首屏绘制前同步 Teek 布局（适合宽度等），避免刷新残影
+    head: [['script', {}, LAYOUT_MODE_BOOT_SCRIPT]],
 
     vite: {
       // 默认 docs/public；改指仓库根 public/，与正文 docs/ 分离
