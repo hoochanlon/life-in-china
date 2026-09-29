@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { defineTeekConfig } from 'vitepress-theme-teek/config'
+import { layoutModeBoot } from './plugins/layout-mode-boot'
 import { sidebarHotReload } from './plugins/sidebar-hot-reload'
 import { buildSidebar } from './sidebar'
 import { LAYOUT_MODE_BOOT_SCRIPT } from './theme/layout-mode-boot'
@@ -80,13 +81,14 @@ export default withMermaid(
     base: '/life-in-china/',
     ignoreDeadLinks: true,
 
-    // 首屏绘制前同步 Teek 布局（适合宽度等），避免刷新残影
-    head: [['script', {}, LAYOUT_MODE_BOOT_SCRIPT]],
+    // 生产 SSG：静态 HTML head 内同步 Teek 布局（适合宽度等）
+    head: [['script', { 'data-layout-mode-boot': '' }, LAYOUT_MODE_BOOT_SCRIPT]],
 
     vite: {
       // 默认 docs/public；改指仓库根 public/，与正文 docs/ 分离
       publicDir: rootPublicDir,
-      plugins: [sidebarHotReload()],
+      // 开发态 index.html 壳也要注入（head 配置在 dev 是客户端晚注入）
+      plugins: [layoutModeBoot(), sidebarHotReload()],
     },
 
     themeConfig: {
